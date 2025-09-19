@@ -1,46 +1,56 @@
 $(document).ready(function() {
-    $('#loginForm').submit(function(event) {
-        event.preventDefault(); // Prevent the default form submission
+    $('#login-form').submit(function(e) {
+        e.preventDefault();
 
-        let email = $('#email').val();
-        let password = $('#password').val();
+        let email = $('#email').val().trim();
+        let password = $('#password').val().trim();
 
         // Regex for email validation
-        let emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-        if (email === "" || password === "") {
-            alert('Email and password fields cannot be empty.');
+        // Validate inputs
+        if (email === '' || password === '') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Please fill in all fields!',
+            });
             return;
-        } else if (!emailPattern.test(email)) {
-            alert('Please enter a valid email address.');
+        } else if (!emailRegex.test(email)) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Invalid Email',
+                text: 'Please enter a valid email address!',
+            });
             return;
         } else if (password.length < 6) {
-            alert('Password must be at least 6 characters long.');
+            Swal.fire({
+                icon: 'error',
+                title: 'Weak Password',
+                text: 'Password must be at least 6 characters long!',
+            });
             return;
         }
 
-        // sending data asynchronously 
+        // Send data asynchronously to login_customer_action.php
         $.ajax({
-            url: '/actions/login_customer.php',
+            url: '../actions/login_customer_action.php',
             type: 'POST',
+            dataType: 'json',
             data: {
                 email: email,
                 password: password
             },
             success: function(response) {
-                if (response === 'success') {
+                if (response.status === 'success') {
                     Swal.fire({
                         icon: 'success',
-                        title: 'Login Successful',
+                        title: 'Welcome ' + response.name,
                         text: response.message,
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            // Redirect user (dashboard/homepage based on role)
-                            if (response.role === 'admin') {
-                                window.location.href = 'admin_dashboard.php';
-                            } else {
-                                window.location.href = 'index.php';
-                            }
+                            // Always redirect to landing page
+                            window.location.href = 'index.php';
                         }
                     });
                 } else {
