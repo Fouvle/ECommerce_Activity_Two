@@ -27,7 +27,7 @@ $(document).ready(function() {
         }
 
         $.ajax({
-            url: '../actions/register_user_action.php',
+            url: '../actions/register_customer_action.php',
             type: 'POST',
             data: {
                 name: name,
@@ -44,7 +44,7 @@ $(document).ready(function() {
                         text: response.message,
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            window.location.href = 'login.php';
+                            window.location.href = '../login/login.php';
                         }
                     });
                 } else {
